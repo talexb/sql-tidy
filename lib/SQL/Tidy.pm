@@ -91,7 +91,8 @@ sub tidy
       if ( exists $self->{'keywords'}{$t} ) {
 
 		#  2019-0215: If we've already got something in the left column and the
-		#  right column, it's time to start a new line.
+		#  right column and there's a new leyword, then it's time to start a
+		#  new line.
 
 		if ( @{ $self->{'output'}->[-1]->{'left'} }  &&
 		     @{ $self->{'output'}->[-1]->{'right'} } ) {
@@ -119,6 +120,10 @@ sub tidy
 	  }
 	}
 
+	#  2019-0215: This is where we take all of the elements we've read in and
+	#  build the output lines, leaving a gutter down the middle to separate the
+	#  keywords (left) from everyting else (right.
+
 	my ( @output, $output );
 	foreach my $line ( @{$self->{'output'}} ) {
 
@@ -131,7 +136,7 @@ sub tidy
         if ( length ( $output ) + length ( $r ) + 1 > $self->{'width'}  ) {
 
           push ( @output, $output );
-          $output = join( ' ', $self->{'indent'}, ( ' ' x $left_max ) );
+          $output = join( '', $self->{'indent'}, ( ' ' x $left_max ) );
 		}
 		$output .= " $r";
       }
