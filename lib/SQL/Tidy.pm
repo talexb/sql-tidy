@@ -85,11 +85,23 @@ sub tidy
 
 	push ( @{$self->{'output'}}, { left => [], right => [] } );
 
+	my $left_max = 0;
 	foreach my $t ( @tokens ) {
 
       if ( exists $self->{'keywords'}{$t} ) {
 
+		#  2019-0215: If we've already got something in the left column and the
+		#  right column, it's time to start a new line.
+
+		if ( @{ $self->{'output'}->[-1]->{'left'} }  &&
+		     @{ $self->{'output'}->[-1]->{'right'} } ) {
+
+		  push ( @{$self->{'output'}}, { left => [], right => [] } );
+		}
         push( @{ $self->{'output'}->[-1]->{'left'} }, $t );
+		my $this_max =
+		  length ( join ( ' ', @{ $self->{'output'}->[-1]->{'left'} } ) );
+		if ( $this_max > $left_max ) { $left_max = $this_max; }
       }
 	  else {
 
@@ -110,21 +122,21 @@ sub tidy
 	my ( @output, $output );
 	foreach my $line ( @{$self->{'output'}} ) {
 
-      $output =  join ( ' ', $self->{'indent'},
-        join ( ' ', @{ $line->{'left'} } ) );
+	  my $left = join ( ' ', @{ $line->{'left'} } );
+      $output =  join ( '', $self->{'indent'},
+	    (' ') x ($left_max - length($left)), $left );
         
       foreach my $r ( @{ $line->{'right'} } ) {
 
         if ( length ( $output ) + length ( $r ) + 1 > $self->{'width'}  ) {
 
           push ( @output, $output );
-          $output = join( ' ',
-            $self->{'indent'},
-            ( ' ' x length( join( ' ', @{ $line->{'left'} } ) ) )
-          );
+          $output = join( ' ', $self->{'indent'}, ( ' ' x $left_max ) );
 		}
 		$output .= " $r";
       }
+	  push ( @output, $output );
+	  $output = '';
 	}
 	if ( $output =~ /\w/ ) { push ( @output, $output ); }
 
