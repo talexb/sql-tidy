@@ -93,7 +93,17 @@ sub tidy
       }
 	  else {
 
-        push( @{ $self->{'output'}->[-1]->{'right'} }, $t );
+		#  2019-0215: If the token's a comma, just add it on to the existing
+		#  line.
+
+		if ( $t eq ',' ) {
+
+		  $self->{'output'}->[-1]->{'right'}->[-1] .= $t;
+
+		} else {
+
+          push( @{ $self->{'output'}->[-1]->{'right'} }, $t );
+		}
 	  }
 	}
 
