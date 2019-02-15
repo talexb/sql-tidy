@@ -107,14 +107,26 @@ sub tidy
 	  }
 	}
 
-	my @output;
+	my ( @output, $output );
 	foreach my $line ( @{$self->{'output'}} ) {
 
-	  my $output = join ( ' ', $self->{'indent'},
-	    join ( ' ', @{ $line->{'left'} } ),
-	    join ( ' ', @{ $line->{'right'} } ) );
-		push ( @output, $output );
+      $output =  join ( ' ', $self->{'indent'},
+        join ( ' ', @{ $line->{'left'} } ) );
+        
+      foreach my $r ( @{ $line->{'right'} } ) {
+
+        if ( length ( $output ) + length ( $r ) + 1 > $self->{'width'}  ) {
+
+          push ( @output, $output );
+          $output = join( ' ',
+            $self->{'indent'},
+            ( ' ' x length( join( ' ', @{ $line->{'left'} } ) ) )
+          );
+		}
+		$output .= " $r";
+      }
 	}
+	if ( $output =~ /\w/ ) { push ( @output, $output ); }
 
 	return ( \@output );
 }
