@@ -49,7 +49,6 @@ sub new
       indent   => '    ',
       width    => 78,
       keywords => [KEYWORDS],
-      margin   => '',
       @_
     );
 
@@ -59,9 +58,55 @@ sub new
 
 	  $self->{'keywords'}{ $word } = 1;
 	}
+	foreach my $arg ( keys %args ) {
+
+	  $self->{ $arg } = $args{ $arg };
+	}
 
 	bless $self, $class;
 	return $self
+}
+
+sub tidy
+{
+    my ( $self, $sql ) = @_;
+	my $result = '';
+
+	defined $sql or return [ $result ];
+	$sql =~ /\w/ or return [ $result ];
+
+    my @tokens = grep !/^\s+$/, SQL::Tokenizer->tokenize($sql);
+
+	#  2019-0215: The concept behind this design is that we'll have keywords to
+	#  the left of the gutter and everything else to the right of the gutter.
+	#  I'm expecting there to be just a single left side keyword, but INSERT
+	#  INTO is an exception to that rule. So some keywords will cause a new
+	#  output line to be created (design to come.)
+
+	push ( @{$self->{'output'}}, { left => [], right => [] } );
+
+	foreach my $t ( @tokens ) {
+
+      if ( exists $self->{'keywords'}{$t} ) {
+
+        push( @{ $self->{'output'}->[-1]->{'left'} }, $t );
+      }
+	  else {
+
+        push( @{ $self->{'output'}->[-1]->{'right'} }, $t );
+	  }
+	}
+
+	my @output;
+	foreach my $line ( @{$self->{'output'}} ) {
+
+	  my $output = join ( ' ', $self->{'indent'},
+	    join ( ' ', @{ $line->{'left'} } ),
+	    join ( ' ', @{ $line->{'right'} } ) );
+		push ( @output, $output );
+	}
+
+	return ( \@output );
 }
 
 1; # End of SQL::Tidy
