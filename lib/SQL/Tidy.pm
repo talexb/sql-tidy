@@ -88,7 +88,7 @@ sub tidy
 	my $left_max = 0;
 	foreach my $t ( @tokens ) {
 
-      if ( exists $self->{'keywords'}{$t} ) {
+      if ( exists $self->{'keywords'}{lc($t)} ) {
 
 		#  2019-0215: If we've already got something in the left column and the
 		#  right column and there's a new leyword, then it's time to start a
