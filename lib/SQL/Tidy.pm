@@ -52,84 +52,84 @@ sub new
       @_
     );
 
-	my $self = {};
-	my $keywords = delete( $args{'keywords'} );
-	foreach my $word ( @$keywords ) {
+    my $self = {};
+    my $keywords = delete( $args{'keywords'} );
+    foreach my $word ( @$keywords ) {
 
-	  $self->{'keywords'}{ $word } = 1;
-	}
-	foreach my $arg ( keys %args ) {
+      $self->{'keywords'}{ $word } = 1;
+    }
+    foreach my $arg ( keys %args ) {
 
-	  $self->{ $arg } = $args{ $arg };
-	}
+      $self->{ $arg } = $args{ $arg };
+    }
 
-	bless $self, $class;
-	return $self
+    bless $self, $class;
+    return $self
 }
 
 sub tidy
 {
     my ( $self, $sql ) = @_;
-	my $result = '';
+    my $result = '';
 
-	defined $sql or return [ $result ];
-	$sql =~ /\w/ or return [ $result ];
+    defined $sql or return [ $result ];
+    $sql =~ /\w/ or return [ $result ];
 
     my @tokens = grep !/^\s+$/, SQL::Tokenizer->tokenize($sql);
 
-	#  2019-0215: The concept behind this design is that we'll have keywords to
-	#  the left of the gutter and everything else to the right of the gutter.
-	#  I'm expecting there to be just a single left side keyword, but INSERT
-	#  INTO is an exception to that rule. So some keywords will cause a new
-	#  output line to be created (design to come.)
+    #  2019-0215: The concept behind this design is that we'll have keywords to
+    #  the left of the gutter and everything else to the right of the gutter.
+    #  I'm expecting there to be just a single left side keyword, but INSERT
+    #  INTO is an exception to that rule. So some keywords will cause a new
+    #  output line to be created (design to come.)
 
-	push ( @{$self->{'output'}}, { left => [], right => [] } );
+    push ( @{$self->{'output'}}, { left => [], right => [] } );
 
-	my $left_max = 0;
-	foreach my $t ( @tokens ) {
+    my $left_max = 0;
+    foreach my $t ( @tokens ) {
 
       if ( exists $self->{'keywords'}{lc($t)} ) {
 
-		#  2019-0215: If we've already got something in the left column and the
-		#  right column and there's a new leyword, then it's time to start a
-		#  new line.
+        #  2019-0215: If we've already got something in the left column and the
+        #  right column and there's a new leyword, then it's time to start a
+        #  new line.
 
-		if ( @{ $self->{'output'}->[-1]->{'left'} }  &&
-		     @{ $self->{'output'}->[-1]->{'right'} } ) {
+        if ( @{ $self->{'output'}->[-1]->{'left'} }  &&
+             @{ $self->{'output'}->[-1]->{'right'} } ) {
 
-		  push ( @{$self->{'output'}}, { left => [], right => [] } );
-		}
+          push ( @{$self->{'output'}}, { left => [], right => [] } );
+        }
         push( @{ $self->{'output'}->[-1]->{'left'} }, $t );
-		my $this_max =
-		  length ( join ( ' ', @{ $self->{'output'}->[-1]->{'left'} } ) );
-		if ( $this_max > $left_max ) { $left_max = $this_max; }
+        my $this_max =
+          length ( join ( ' ', @{ $self->{'output'}->[-1]->{'left'} } ) );
+        if ( $this_max > $left_max ) { $left_max = $this_max; }
       }
-	  else {
+      else {
 
-		#  2019-0215: If the token's a comma, just add it on to the existing
-		#  line.
+        #  2019-0215: If the token's a comma, just add it on to the existing
+        #  line.
 
-		if ( $t eq ',' ) {
+        if ( $t eq ',' ) {
 
-		  $self->{'output'}->[-1]->{'right'}->[-1] .= $t;
+          $self->{'output'}->[-1]->{'right'}->[-1] .= $t;
 
-		} else {
+        } else {
 
           push( @{ $self->{'output'}->[-1]->{'right'} }, $t );
-		}
-	  }
-	}
+        }
+      }
+    }
 
-	#  2019-0215: This is where we take all of the elements we've read in and
-	#  build the output lines, leaving a gutter down the middle to separate the
-	#  keywords (left) from everyting else (right.
+    #  2019-0215: This is where we take all of the elements we've read in and
+    #  build the output lines, leaving a gutter down the middle to separate the
+    #  keywords (left) from everyting else (right.
 
-	my ( @output, $output );
-	foreach my $line ( @{$self->{'output'}} ) {
+    my ( @output, $output );
+    foreach my $line ( @{$self->{'output'}} ) {
 
-	  my $left = join ( ' ', @{ $line->{'left'} } );
+      my $left = join ( ' ', @{ $line->{'left'} } );
       $output =  join ( '', $self->{'indent'},
-	    (' ') x ($left_max - length($left)), $left );
+        (' ') x ($left_max - length($left)), $left );
         
       foreach my $r ( @{ $line->{'right'} } ) {
 
@@ -137,15 +137,15 @@ sub tidy
 
           push ( @output, $output );
           $output = join( '', $self->{'indent'}, ( ' ' x $left_max ) );
-		}
-		$output .= " $r";
+        }
+        $output .= " $r";
       }
-	  push ( @output, $output );
-	  $output = '';
-	}
-	if ( $output =~ /\w/ ) { push ( @output, $output ); }
+      push ( @output, $output );
+      $output = '';
+    }
+    if ( $output =~ /\w/ ) { push ( @output, $output ); }
 
-	return ( \@output );
+    return ( \@output );
 }
 
 1; # End of SQL::Tidy
