@@ -6,6 +6,7 @@ use warnings;
 use Test::More;
 
 use SQL::Tidy;
+use SQL::Tidy::Util;
 
 {
     #  Test line-folding by making the width shorter and the number of fields
@@ -48,6 +49,7 @@ use SQL::Tidy;
             $fields{$field} = 1;
           }
         }
+	    gutter_check ( $result );
       }
 
       #  And check that no fields was missed.
@@ -56,8 +58,6 @@ use SQL::Tidy;
 
         is( $fields{$field}, 1, "$field was seen" );
       }
-
-      #  Will need to do a gutter check eventually. Code to come.
     }
 
     done_testing;
