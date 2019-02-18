@@ -40,6 +40,9 @@ use constant KEYWORDS => qw/
     when
     where/;
 
+#  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
+#  and unchanged) as optional arguments to the object creation.
+
 sub new
 {
     my $class = shift;
@@ -78,10 +81,10 @@ sub tidy
     my @tokens = grep !/^\s+$/, SQL::Tokenizer->tokenize($sql);
 
     #  2019-0215: The concept behind this design is that we'll have keywords to
-    #  the left of the gutter and everything else to the right of the gutter.
-    #  I'm expecting there to be just a single left side keyword, but INSERT
-    #  INTO is an exception to that rule. So some keywords will cause a new
-    #  output line to be created (design to come.)
+	#  the left of the gutter and everything else to the right of the gutter.
+	#  I'm expecting there to be just a single left side keyword, but INSERT
+	#  INTO is an exception to that rule. Some keywords will cause a new output
+	#  line to be created (details and design to come.)
 
     push ( @{$self->{'output'}}, { left => [], right => [] } );
 
@@ -91,7 +94,7 @@ sub tidy
       if ( exists $self->{'keywords'}{lc($t)} ) {
 
         #  2019-0215: If we've already got something in the left column and the
-        #  right column and there's a new leyword, then it's time to start a
+        #  right column and there's a new keyword, then it's time to start a
         #  new line.
 
         if ( @{ $self->{'output'}->[-1]->{'left'} }  &&
