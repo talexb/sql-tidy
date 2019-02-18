@@ -40,26 +40,35 @@ use constant KEYWORDS => qw/
     when
     where/;
 
+use constant KEYWORD_EXCEPTIONS => qw/as/;
+
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
 
 sub new
 {
     my $class = shift;
-    my %args  = (
+    my %args = (
 
       # Some defaults
-      indent   => '    ',
-      width    => 78,
-      keywords => [KEYWORDS],
+      indent             => '    ',
+      width              => 78,
+      keywords           => [KEYWORDS],
+      keyword_exceptions => [KEYWORD_EXCEPTIONS],
       @_
     );
 
     my $self = {};
     my $keywords = delete( $args{'keywords'} );
-    foreach my $word ( @$keywords ) {
+    my $keyword_exceptions = delete( $args{'keyword_exceptions'} );
+	my %keyword_exceptions = map { $_ => undef } @$keyword_exceptions;
 
-      $self->{'keywords'}{ $word } = 1;
+	#  2019-0218: The keyword maps to a value that tells us whether or not to
+	#  start a new output line.
+
+    foreach my $word (@$keywords) {
+
+      $self->{'keywords'}{$word} = exists $keyword_exceptions{$word} ? 0 : 1;
     }
     foreach my $arg ( keys %args ) {
 
@@ -95,7 +104,17 @@ sub tidy
     my $left_max = 0;
     foreach my $t ( @tokens ) {
 
-      if ( exists $self->{'keywords'}{lc($t)} ) {
+	  #  2019-0218: This is a bit of a logical mess. I want to know that 'as'
+	  #  is a keyword, but I don't want it to start a new line. The SQL
+	  #
+	  #    select rtrim(foo) as foo ..
+	  #
+	  #  should not be tidied to be
+	  #
+	  #    select rtrim(foo)
+	  #        as foo ..
+
+      if ( exists $self->{'keywords'}{lc($t)} && $self->{'keywords'}{lc($t)} ) {
 
         #  2019-0215: If we've already got something in the left column and the
         #  right column and there's a new keyword, then it's time to start a
