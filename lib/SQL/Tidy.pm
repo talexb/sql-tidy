@@ -40,7 +40,7 @@ use constant KEYWORDS => qw/
     when
     where/;
 
-use constant KEYWORD_EXCEPTIONS => qw/as/;
+use constant KEYWORD_EXCEPTIONS => qw/as on/;
 
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
