@@ -70,9 +70,6 @@ sub new
     return $self
 }
 
-#  2019-0218: When SQL is passed to this routine, clear the output. Hmm .. can
-#  do that simply by changing the push to a set operation.
-
 sub tidy
 {
     my ( $self, $sql ) = @_;
@@ -89,7 +86,11 @@ sub tidy
 	#  INTO is an exception to that rule. Some keywords will cause a new output
 	#  line to be created (details and design to come.)
 
-    push ( @{$self->{'output'}}, { left => [], right => [] } );
+	#  2019-0218: Instead of doing a push, which added to whatever was here
+	#  from previous calls, doing a set, so as to intentionally clear out
+	#  anything from previous calls.
+
+    $self->{'output'} = [ { left => [], right => [] } ];
 
     my $left_max = 0;
     foreach my $t ( @tokens ) {
