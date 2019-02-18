@@ -79,7 +79,7 @@ sub gutter_check
 
 	    foreach my $word ( grep { /\w/ } split (/ +/, $left ) ) {
 
-		  ok ( exists $keywords{ $word }, "$word is a keyword" );
+		  ok ( exists $keywords{ lc $word }, "$word is a keyword" );
 		}
 	  }
 	}

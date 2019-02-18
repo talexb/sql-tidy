@@ -6,6 +6,7 @@ use warnings;
 use Test::More;
 
 use SQL::Tidy;
+use SQL::Tidy::Util;
 
 {
     my $tidy = SQL::Tidy->new;
@@ -30,6 +31,7 @@ use SQL::Tidy;
 
 	  is ( length ( $left ), $last_len_left, 'Gutter check' );
 	}
+	gutter_check ( $result );
 
 	done_testing;
 }

@@ -6,6 +6,7 @@ use warnings;
 use Test::More;
 
 use SQL::Tidy;
+use SQL::Tidy::Util;
 
 {
 	#  A fairly trivial test of an insert statement. Since both insert and into
@@ -20,6 +21,8 @@ use SQL::Tidy;
 
 	my $result = $tidy->tidy($sql);
 	is ( scalar @$result, 2, 'Got two lines' );
+
+	gutter_check ( $result );
 
 	done_testing;
 }
