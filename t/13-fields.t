@@ -6,10 +6,10 @@ use warnings;
 use Test::More;
 
 use SQL::Tidy;
+use SQL::Tidy::Util;
 
 {
-	#  Test line-folding by making the width shorter and the number of fields
-	#  longer.
+	#  Test line-folding by varying the output width.
 
     foreach my $max_width ( 30, 31, 32, 33, 34 ) {
 
@@ -47,8 +47,9 @@ use SQL::Tidy;
           }
         }
       }
+	  gutter_check ( $result );
 
-      #  And check that no fields was missed.
+      #  And check that no fields were missed.
 
       foreach my $field ( keys %fields ) {
 

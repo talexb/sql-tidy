@@ -52,7 +52,7 @@ use SQL::Tidy::Util;
 	    gutter_check ( $result );
       }
 
-      #  And check that no fields was missed.
+      #  And check that no fields were missed.
 
       foreach my $field ( keys %fields ) {
 
