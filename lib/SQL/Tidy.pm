@@ -70,6 +70,9 @@ sub new
     return $self
 }
 
+#  2019-0218: When SQL is passed to this routine, clear the output. Hmm .. can
+#  do that simply by changing the push to a set operation.
+
 sub tidy
 {
     my ( $self, $sql ) = @_;
