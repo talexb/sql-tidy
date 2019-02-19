@@ -7,45 +7,14 @@ our @ISA = ('Exporter');
 
 our @EXPORT = qw/gutter_check/;
 
+use SQL::Tidy::Constants;
+
 use Test::More;
 
 #  2019-0217: This module will check that the gutter in the output is correct,
-#  as that's one of the design goals for this module. Yes, this list of
-#  keywords has been copied from SQL::Tidy.
+#  as that's one of the design goals for this module.
 
-use constant KEYWORDS => qw/
-    and
-    as
-    between
-    by
-    case
-    create
-    delete
-    desc
-    else
-    end
-    for
-    from
-    group
-    into
-    insert
-    join
-    left
-    on
-    only
-    or
-    order
-    read
-    select
-    then
-    union
-    update
-    values
-    view
-    when
-    where/;
-
-my %keywords = map { $_ => undef } KEYWORDS;
+my %keywords = map { $_ => undef } @Keywords;
 
 sub gutter_check
 {

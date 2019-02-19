@@ -6,41 +6,11 @@ use warnings;
 
 our $VERSION = '0.01';
 
+use SQL::Tidy::Constants;
+
 use SQL::Tokenizer;
 
-use constant KEYWORDS => qw/
-    and
-    as
-    between
-    by
-    case
-    create
-    delete
-    desc
-    else
-    end
-    for
-    from
-    group
-    into
-    insert
-    join
-    left
-    on
-    only
-    or
-    order
-    read
-    select
-    then
-    union
-    update
-    values
-    view
-    when
-    where/;
-
-use constant KEYWORD_EXCEPTIONS => qw/as on set/;
+use constant KEYWORD_EXCEPTIONS => qw/as on set desc asc/;
 
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
@@ -53,7 +23,7 @@ sub new
       # Some defaults
       indent             => '    ',
       width              => 78,
-      keywords           => [KEYWORDS],
+      keywords           => [ @Keywords ],
       keyword_exceptions => [KEYWORD_EXCEPTIONS],
       @_
     );
