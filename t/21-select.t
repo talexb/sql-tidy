@@ -21,7 +21,7 @@ use SQL::Tidy::Util;
 	my $result = $tidy->tidy($sql);
 	is ( scalar @$result, 3, 'Got three lines' );
 
-	gutter_check ( $result );
+	gutter_check ( $result, $tidy->keyword_exceptions );
 
 	done_testing;
 }

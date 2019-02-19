@@ -25,7 +25,7 @@ ORDER BY ProductName DESC
     my $result = $tidy->tidy($query);
     is ( scalar @$result, 6, 'Got six lines' );
 
-    gutter_check ( $result );
+    gutter_check ( $result, $tidy->keyword_exceptions );
 
     done_testing;
 }

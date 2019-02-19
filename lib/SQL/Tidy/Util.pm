@@ -18,7 +18,7 @@ my %keywords = map { $_ => undef } @Keywords;
 
 sub gutter_check
 {
-    my $array = shift;
+    my ( $array, $keyword_exceptions ) = @_;
 	defined $array or BAILOUT ( 'Arrayref not supplied to GutterCheck' );
 
 	#  First, get the location of the gutter from the first line, keeping in
@@ -28,10 +28,18 @@ sub gutter_check
 	( $indent, $remainder ) = ( $array->[0] =~ /^(\s+)(.+)$/ );
 
 	my @reserved;
-    foreach my $word ( split ( /\s/, $remainder ) ) {
+    foreach my $word ( split( /\s/, $remainder ) ) {
 
-      if ( exists( $keywords{ lc $word } ) ) { push( @reserved, $word ); }
-      else                                   { last; }
+      if (  exists( $keywords{ lc $word } )
+        && !exists $keyword_exceptions->{ lc $word } )
+      {
+
+        push( @reserved, $word );
+
+      } else {
+
+        last;
+      }
     }
 
 	my $gutter_position = length ( $indent ) + length ( join ( ' ', @reserved ) );

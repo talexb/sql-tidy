@@ -10,7 +10,8 @@ use SQL::Tidy::Constants;
 
 use SQL::Tokenizer;
 
-use constant KEYWORD_EXCEPTIONS => qw/as on set desc asc/;
+use constant KEYWORD_EXCEPTIONS =>
+  qw/as on set desc asc cast int in like all date time/;
 
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
@@ -142,6 +143,17 @@ sub tidy
     if ( $output =~ /\w/ ) { push ( @output, $output ); }
 
     return ( \@output );
+}
+
+sub keyword_exceptions
+{
+    my $self = shift;
+    my %exceptions =
+      map { $_ => undef }
+      grep { !$self->{'keywords'}->{$_} }
+      keys %{ $self->{'keywords'} };
+
+	return ( \%exceptions );
 }
 
 1; # End of SQL::Tidy

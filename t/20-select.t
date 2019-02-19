@@ -31,7 +31,7 @@ use SQL::Tidy::Util;
 
 	  is ( length ( $left ), $last_len_left, 'Gutter check' );
 	}
-	gutter_check ( $result );
+	gutter_check ( $result, $tidy->keyword_exceptions );
 
 	done_testing;
 }

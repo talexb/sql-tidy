@@ -23,9 +23,9 @@ HAVING MAX(p1.ListPrice) >= ALL
 	#  This tests queries from the SQL Server 2017 page.
 
     my $result = $tidy->tidy($query);
-    is ( scalar @$result, 6, 'Got six lines' );
+    is ( scalar @$result, 7, 'Got seven lines' );
 
-    gutter_check ( $result );
+    gutter_check ( $result, $tidy->keyword_exceptions );
 
     done_testing;
 }

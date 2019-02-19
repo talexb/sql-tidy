@@ -21,7 +21,7 @@ use SQL::Tidy::Util;
 	my $result = $tidy->tidy($query);
 	is ( scalar @$result, 4, 'Got four lines' );
 
-	gutter_check ( $result );
+	gutter_check ( $result, $tidy->keyword_exceptions );
 
 	done_testing;
 }

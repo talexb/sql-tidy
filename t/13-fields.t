@@ -47,7 +47,7 @@ use SQL::Tidy::Util;
           }
         }
       }
-	  gutter_check ( $result );
+	  gutter_check ( $result, $tidy->keyword_exceptions );
 
       #  And check that no fields were missed.
 

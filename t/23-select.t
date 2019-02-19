@@ -27,7 +27,7 @@ use SQL::Tidy::Util;
                    where ORDNUMBER like '[0-9][0-9][0-9][0-9][0-9][0-9]' and
                          cast(ORDNUMBER as int) > ? and TYPE = 1 and
                          AUDTDATE > '20180301' and
-                         cast(ORDNUMBER as int) not in (496401, 507202)
+                         cast(ORDNUMBER as int)
                 order by ORDNUMBER asc};
 
 	#  This tests another complex query.
@@ -35,7 +35,7 @@ use SQL::Tidy::Util;
     my $result = $tidy->tidy($query);
     is ( scalar @$result, 14, 'Got fourteen lines' );
 
-    gutter_check ( $result );
+    gutter_check ( $result, $tidy->keyword_exceptions );
 
     done_testing;
 }
