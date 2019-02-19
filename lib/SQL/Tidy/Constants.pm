@@ -23,6 +23,7 @@ our @Keywords = ( qw/
     for
     from
     group
+	having
     inner
     insert
     into
