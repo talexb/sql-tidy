@@ -23,8 +23,8 @@ use SQL::Tidy::Util;
                                 OEORDH.TYPE = 1) };
 
 	#  This tests whether we can format SQL with a sub-select. The answer is
-	#  yes, but as ideally as I'd like (see above for the ideal). This will do
-	#  for now.
+	#  yes, but not as ideally as I'd like (see above for the ideal). This
+	#  will do for now.
 
     my $result = $tidy->tidy($query);
     is ( scalar @$result, 12, 'Got twelve lines' );
