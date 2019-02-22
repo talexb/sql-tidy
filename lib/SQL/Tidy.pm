@@ -119,15 +119,23 @@ sub tidy
 
     #  2019-0215: This is where we take all of the elements we've read in and
     #  build the output lines, leaving a gutter down the middle to separate the
-    #  keywords (left) from everyting else (right.
+    #  keywords (left) from everything else (right).
 
     my ( @output, $output );
     foreach my $line ( @{$self->{'output'}} ) {
+
+      #  Build everything to the left of the gutter. That's the indent, the
+      #  correct number of spaces, then all of the words on the left side.
 
       my $left = join ( ' ', @{ $line->{'left'} } );
       $output =  join ( '', $self->{'indent'},
         (' ') x ($left_max - length($left)), $left );
         
+      #  Build everything to the right of the gutter. If it overflows, push
+      #  what we have onto the stack and start a new line with the maximum
+      #  indent. Whether or not it overflows, add the current word to the
+      #  output.
+
       foreach my $r ( @{ $line->{'right'} } ) {
 
         if ( length ( $output ) + length ( $r ) + 1 > $self->{'width'}  ) {
@@ -137,9 +145,16 @@ sub tidy
         }
         $output .= " $r";
       }
+
+      #  Push the last output string onto the stack, and clear the output.
+
       push ( @output, $output );
       $output = '';
     }
+
+    #  We've finished going through the output; if there's anything left that's
+    #  non-blank, add it to the stack, then return the stack.
+
     if ( $output =~ /\w/ ) { push ( @output, $output ); }
 
     return ( \@output );
