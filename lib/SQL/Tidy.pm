@@ -122,14 +122,33 @@ sub tidy
     #  keywords (left) from everything else (right).
 
     my ( @output, $output );
+
+    #  2019-0221: In order to indent sub-selects, we're going to track when we
+    #  saw an opening bracket on the previous line, and also track the value of
+    #  left_max (the largest keywords on the left side so far).
+
+    my $bracket_in_previous_line = 0;
+    my $local_left_max = 0;
+
     foreach my $line ( @{$self->{'output'}} ) {
 
       #  Build everything to the left of the gutter. That's the indent, the
       #  correct number of spaces, then all of the words on the left side.
 
       my $left = join ( ' ', @{ $line->{'left'} } );
-      $output =  join ( '', $self->{'indent'},
-        (' ') x ($left_max - length($left)), $left );
+      if ( $local_left_max < length $left ) { $local_left_max = length $left; }
+
+      #  Normally the padding amount is the left_max less the length of the
+      #  string on the left; but if we're inside a bracket, that amount is
+      #  increased by the size of the string in the left side, plus one for the
+      #  gutter.
+
+      my $padding_amount =
+        $bracket_in_previous_line
+          ?   $left_max - length($left) + 1 + $local_left_max
+          : ( $left_max - length($left) );
+
+      $output = join( '', $self->{'indent'}, (' ') x $padding_amount, $left );
         
       #  Build everything to the right of the gutter. If it overflows, push
       #  what we have onto the stack and start a new line with the maximum
@@ -149,6 +168,19 @@ sub tidy
       #  Push the last output string onto the stack, and clear the output.
 
       push ( @output, $output );
+
+      #  2019-0221: Here's where we turn on and off whether we've seen a
+      #  bracket in the previous line. 
+
+      if ( $bracket_in_previous_line ) {
+
+        if ( $output =~ /\)$/ ) { $bracket_in_previous_line = 0; }
+
+      } else {
+
+        $bracket_in_previous_line = ( $output =~ /\($/ );
+      }
+
       $output = '';
     }
 
