@@ -16,13 +16,16 @@ use constant KEYWORD_EXCEPTIONS =>
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
 
+#  2019-0222: Also like to add a feature that uses the existing indent as the
+#  indent to be used in this module.
+
 sub new
 {
     my $class = shift;
     my %args = (
 
       # Some defaults
-      indent             => '    ',
+      indent             => 4,
       width              => 78,
       keywords           => [ @Keywords ],
       keyword_exceptions => [KEYWORD_EXCEPTIONS],
@@ -149,7 +152,8 @@ sub tidy
           ?   $left_max - length($left) + 1 + $local_left_max
           : ( $left_max - length($left) );
 
-      $output = join( '', $self->{'indent'}, (' ') x $padding_amount, $left );
+      $output =
+        join( '', (' ') x $self->{'indent'}, (' ') x $padding_amount, $left );
         
       #  Build everything to the right of the gutter. If it overflows, push
       #  what we have onto the stack and start a new line with the maximum
@@ -161,7 +165,7 @@ sub tidy
         if ( length ( $output ) + length ( $r ) + 1 > $self->{'width'}  ) {
 
           push ( @output, $output );
-          $output = join( '', $self->{'indent'}, ( ' ' x $left_max ) );
+          $output = join( '', (' ') x $self->{'indent'}, ( ' ' x $left_max ) );
         }
         $output .= " $r";
       }
