@@ -26,6 +26,7 @@ sub new
       width              => 78,
       keywords           => [ @Keywords ],
       keyword_exceptions => [KEYWORD_EXCEPTIONS],
+      sub_select_indent  => 0,
       @_
     );
 
@@ -169,16 +170,22 @@ sub tidy
 
       push ( @output, $output );
 
-      #  2019-0221: Here's where we turn on and off whether we've seen a
-      #  bracket in the previous line. 
+      #  2019-0222: This is an experimental feature that's turned off by
+      #  default.
 
-      if ( $bracket_in_previous_line ) {
+      if ( $self->{'sub_select_indent'} ) {
 
-        if ( $output =~ /\)$/ ) { $bracket_in_previous_line = 0; }
+        #  2019-0221: Here's where we turn on and off whether we've seen a
+        #  bracket in the previous line.
 
-      } else {
+        if ($bracket_in_previous_line) {
 
-        $bracket_in_previous_line = ( $output =~ /\($/ );
+          if ( $output =~ /\)$/ ) { $bracket_in_previous_line = 0; }
+
+        } else {
+
+          $bracket_in_previous_line = ( $output =~ /\($/ );
+        }
       }
 
       $output = '';
