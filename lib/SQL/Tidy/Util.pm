@@ -60,7 +60,7 @@ sub gutter_check
 		}
 	  }
 	}
-
+    return ( $gutter_position );
 }
 
 1;

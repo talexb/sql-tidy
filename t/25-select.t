@@ -9,7 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-    my $tidy = SQL::Tidy->new;
+    my $tidy = SQL::Tidy->new(sub_select_indent => 1);
     my $query = q{ select rtrim(CODESLSP1) as CODESLSP1 from ARCUS where IDCUST
     in (select IDCUST from ARCUS where ANNUAL_SALES > 100000) order by
     LAST_NAME };
@@ -19,7 +19,17 @@ use SQL::Tidy::Util;
     my $result = $tidy->tidy($query);
     is ( scalar @$result, 7, 'Got seven lines' );
 
-    gutter_check ( $result, $tidy->keyword_exceptions );
+    my $gutter_position = gutter_check ( $result, $tidy->keyword_exceptions );
+
+    #  Check to see that the sub-select is properly indented. It's on lines
+    #  4-6.
+
+    my $expected_indent = (' ') x ( $gutter_position + 1 );
+    for my $line ( 3 .. 5 ) {
+
+      is( substr( $result->[$line], 0, $gutter_position + 1 ),
+        $expected_indent, 'Sub-select indented as expected' );
+    }
 
     done_testing;
 }
