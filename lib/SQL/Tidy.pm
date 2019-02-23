@@ -17,7 +17,19 @@ use constant KEYWORD_EXCEPTIONS =>
 #  and unchanged) as optional arguments to the object creation.
 
 #  2019-0222: Also like to add a feature that uses the existing indent as the
-#  indent to be used in this module.
+#  indent to be used in this module. To make it even more clever, figure in the
+#  line of code and output that as well, so
+#
+#    my $query = 'select foo from bar where baz > 0';
+#
+#  becomes
+#
+#    my $query = 'select foo
+#                   from bar
+#                  where baz > 0';
+#
+#  just by the user specifying that there's a non-blank indent at the beginning
+#  of the line.
 
 sub new
 {
