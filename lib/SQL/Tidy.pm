@@ -66,6 +66,26 @@ sub new
     return $self
 }
 
+#  2019-0223: I'd like to be able to tidy up a create table statment, but
+#  because the field types are reserved words, I'm getting a layout like this:
+#
+#    create table foo ( foo_id int, bar
+#        varchar ( 255 ), baz
+#        varchat ( 255 ), baz ..
+#
+#  The 'int' keyword would have triggered an earlier line break, except I added
+#  the comma to the end of that line, and 'int,' didn't match as a keyword. I'd
+#  prefer the output look like this:
+#
+#    create table foo (
+#        foo_id int,
+#        bar varchar ( 255 ),
+#        baz varchar ( 255 ), ..
+#
+#  So this routine could catch when we're doing a 'create table' and do the
+#  right thing, or we could have a separate tidy call for tables .. except that
+#  makes the user do extra work.
+
 sub tidy
 {
     my ( $self, $sql ) = @_;
