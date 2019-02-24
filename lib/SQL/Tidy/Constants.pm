@@ -10,7 +10,10 @@ our @EXPORT = qw/@Keywords/;
 #  This module holds the keyword definitions.
 
 #  These keywords grabbed from section 5.2 (<token> and <separator>) of the
-#  SQL92 spec at http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt.
+#  SQL92 spec at http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt,
+#  starting at page 84. The group at the end are potential reserved words that
+#  include IF and ELSEIF, which have been added in order to properly process IF
+#  ELSEIF END blocks.
 
 our @Keywords = (
   qw/
@@ -82,6 +85,14 @@ our @Keywords = (
     year
 
     zone
+
+    after alias async before boolean breadth completion call cycle data depth
+    dictionary each elseif equals general if ignore leave less limit loop
+    modify new none object off oid old operation operators others parameters
+    pendant preorder private protected recursive ref referencing replace
+    resignal return returns role routine row savepoint search sensitive
+    sequence signal similar sqlexception sqlwarning structure test there
+    trigger type under variable virtual visible wait while without
     /
 );
 

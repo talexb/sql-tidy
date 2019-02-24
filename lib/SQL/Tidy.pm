@@ -11,7 +11,7 @@ use SQL::Tidy::Constants;
 use SQL::Tokenizer;
 
 use constant KEYWORD_EXCEPTIONS =>
-  qw/as on set desc asc cast int in like all date time/;
+  qw/as on set desc asc cast int in like all date time replace substring/;
 
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
