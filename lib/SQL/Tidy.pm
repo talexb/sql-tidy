@@ -103,16 +103,16 @@ sub tidy
 	#  line to be created (details and design to come.)
 
 	#  2019-0218: Instead of doing a push, which added to whatever was here
-	#  from previous calls, doing a set, so as to intentionally clear out
-	#  anything from previous calls.
+    #  from previous calls, I do a set, so as to intentionally clear any output
+    #  from the previous calls.
 
     $self->{'output'} = [ { left => [], right => [] } ];
 
     my $left_max = 0;
     foreach my $t ( @tokens ) {
 
-	  #  2019-0218: This is a bit of a logical mess. I want to know that 'as'
-	  #  is a keyword, but I don't want it to start a new line. The SQL
+      #  2019-0218: This is a little complicated. I want to know that 'as' is a
+      #  keyword, but I don't want it to start a new line. The SQL
 	  #
 	  #    select rtrim(foo) as foo ..
 	  #
@@ -132,6 +132,10 @@ sub tidy
 
           push ( @{$self->{'output'}}, { left => [], right => [] } );
         }
+
+        #  Whether or not we started a new line, add this keyword to the left
+        #  side, and recalculate the max width of the left side.
+
         push( @{ $self->{'output'}->[-1]->{'left'} }, $t );
         my $this_max =
           length ( join ( ' ', @{ $self->{'output'}->[-1]->{'left'} } ) );
@@ -139,8 +143,8 @@ sub tidy
       }
       else {
 
-        #  2019-0215: If the token's a comma, just add it on to the existing
-        #  line.
+        #  2019-0215: If the token's a comma, just add it to the end of the
+        #  existing line.
 
         if ( $t eq ',' ) {
 
@@ -161,7 +165,9 @@ sub tidy
 
     #  2019-0221: In order to indent sub-selects, we're going to track when we
     #  saw an opening bracket on the previous line, and also track the value of
-    #  left_max (the largest keywords on the left side so far).
+    #  left_max (the largest keywords on the left side so far). This is an
+    #  experimental feature, so it has to be explicitly enabled from the object
+    #  creation.
 
     my $bracket_in_previous_line = 0;
     my $local_left_max = 0;
@@ -206,8 +212,8 @@ sub tidy
 
       push ( @output, $output );
 
-      #  2019-0222: This is an experimental feature that's turned off by
-      #  default.
+      #  2019-0222: As mentioned above, this is an experimental feature that's
+      #  turned off by default.
 
       if ( $self->{'sub_select_indent'} ) {
 
