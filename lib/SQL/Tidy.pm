@@ -94,6 +94,36 @@ sub tidy
     defined $sql or return [ $result ];
     $sql =~ /\w/ or return [ $result ];
 
+    #  2019-0225: Add feature to capture code before the beginning and after
+    #  the end of the SQL that we're tidying. We're looking for a single quote,
+    #  double quote or opening brace to start the SQL code. If we see that,
+    #  then we look for the matching closing character.
+
+    my ( $before, $after ) = ( '', '' );
+    if ( $self->{'watch_for_code'} ) {
+
+      #  Do a non-greedy match to find the opening quote ..
+
+      if ( $sql =~ /^(.+?)(['"{])(.+)/m ) {
+
+	my ( $quote1, $quote2 );
+	( $before, $quote1 ) = ( $1, $2 );
+	$sql = $3;
+
+        my %matched_pairs = ( q{'} => q{'}, q{"} => q{"}, '{' => '}' );
+	$quote2 = $matched_pairs{ $quote1 };
+	my $after = '';
+
+	#  .. and do a greedy match to find the closing quote.
+
+	if ( $sql =~ /(.+)${quote2}(.+)$/m ) {
+
+	  ( $sql, $after ) = ( $1, join('', $quote2, $2 ) );
+	}
+
+      }
+    }
+
     my @tokens = grep !/^\s+$/, SQL::Tokenizer->tokenize($sql);
 
     #  2019-0215: The concept behind this design is that we'll have keywords to
@@ -237,6 +267,15 @@ sub tidy
     #  non-blank, add it to the stack, then return the stack.
 
     if ( $output =~ /\w/ ) { push ( @output, $output ); }
+
+    #  2019-0225: Perform the other half of the capture code feature by adding
+    #  the before and after strings to the output -- while remembering to
+    #  adjust the indents for all of the lines.
+
+    if ( $self->{'watch_for_code'} ) {
+
+      #  Code here
+    }
 
     return ( \@output );
 }
