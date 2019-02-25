@@ -48,10 +48,10 @@ sub new
     my $self = {};
     my $keywords = delete( $args{'keywords'} );
     my $keyword_exceptions = delete( $args{'keyword_exceptions'} );
-	my %keyword_exceptions = map { $_ => undef } @$keyword_exceptions;
+    my %keyword_exceptions = map { $_ => undef } @$keyword_exceptions;
 
-	#  2019-0218: The keyword maps to a value that tells us whether or not to
-	#  start a new output line.
+    #  2019-0218: The keyword maps to a value that tells us whether or not to
+    #  start a new output line.
 
     foreach my $word (@$keywords) {
 
@@ -97,12 +97,12 @@ sub tidy
     my @tokens = grep !/^\s+$/, SQL::Tokenizer->tokenize($sql);
 
     #  2019-0215: The concept behind this design is that we'll have keywords to
-	#  the left of the gutter and everything else to the right of the gutter.
-	#  I'm expecting there to be just a single left side keyword, but INSERT
-	#  INTO is an exception to that rule. Some keywords will cause a new output
-	#  line to be created (details and design to come.)
+    #  the left of the gutter and everything else to the right of the gutter.
+    #  I'm expecting there to be just a single left side keyword, but INSERT
+    #  INTO is an exception to that rule. Some keywords will cause a new output
+    #  line to be created (details and design to come.)
 
-	#  2019-0218: Instead of doing a push, which added to whatever was here
+    #  2019-0218: Instead of doing a push, which added to whatever was here
     #  from previous calls, I do a set, so as to intentionally clear any output
     #  from the previous calls.
 
@@ -113,13 +113,13 @@ sub tidy
 
       #  2019-0218: This is a little complicated. I want to know that 'as' is a
       #  keyword, but I don't want it to start a new line. The SQL
-	  #
-	  #    select rtrim(foo) as foo ..
-	  #
-	  #  should not be tidied to be
-	  #
-	  #    select rtrim(foo)
-	  #        as foo ..
+      #
+      #    select rtrim(foo) as foo ..
+      #
+      #  should not be tidied to be
+      #
+      #    select rtrim(foo)
+      #        as foo ..
 
       if ( exists $self->{'keywords'}{lc($t)} && $self->{'keywords'}{lc($t)} ) {
 
@@ -249,7 +249,7 @@ sub keyword_exceptions
       grep { !$self->{'keywords'}->{$_} }
       keys %{ $self->{'keywords'} };
 
-	return ( \%exceptions );
+    return ( \%exceptions );
 }
 
 1; # End of SQL::Tidy
