@@ -5,8 +5,9 @@ use warnings;
 
 use Getopt::Long;
 use Pod::Usage;
+use FindBin qw/$Bin/;
 
-use lib 'lib';
+use lib "$Bin/../lib";
 
 use SQL::Tidy;
 
