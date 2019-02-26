@@ -33,20 +33,15 @@ use SQL::Tidy::Util;
 
     my $result = $tidy->tidy($query);
 
-    TODO: {
+    my @parts = split(/(')/, $query);
+    my $before = join('', @parts[0..1]);
+    my $after = join('', @parts[3..4]);
 
-      local $TODO = 'Tidying SQL within code not yet implemented';
+    is ( substr ( $result->[0], 0, length ( $before ) ), $before,
+      'First part matches' );
+    like ( $result->[-1], qr/$after/, 'Last part matches' );
 
-      my @parts = split(/(')/, $query);
-      my $before = join('', @parts[0..1]);
-      my $after = join('', @parts[3..4]);
-
-      is ( substr ( $result->[0], 0, length ( $before ) ), $before,
-        'First part matches' );
-      like ( $result->[-1], qr/$after/, 'Last part matches' );
-
-      is ( scalar @{ $result }, 3, 'Got three lines' );
-    }
+    is ( scalar @{ $result }, 3, 'Got three lines' );
 
     done_testing;
 }
