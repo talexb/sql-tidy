@@ -14,7 +14,8 @@ use SQL::Tidy;
 #  This is the command line interface to SQL::Tidy.
 
 {
-    my ( $indent, $width, @keywords, @keyword_exs, $sub_select_indent );
+    my ( $indent, $width, @keywords, @keyword_exs, $sub_select_indent,
+      $watch_for_code );
     my ( $help, $man ) = ( 0, 0 );
 
     GetOptions(
@@ -23,6 +24,7 @@ use SQL::Tidy;
       'keywords=s@'       => \@keywords,
       'keyword_exs=s@'    => \@keyword_exs,
       'sub_select_indent' => \$sub_select_indent,
+      'watch_for_code'    => \$watch_for_code,
 
       'help|?|n' => \$help,
       'man'      => \$man
@@ -66,6 +68,8 @@ sqltidy [options]
    --width         width to use for wrapping (default is 78)
    --keywords      list of keywords to use instead of defaults
    --keyword_exs   list of keyword exceptions instead of the defaults
+   --sub_select_indent  enable experimental code to handle sub-selects
+   --watch_for_code     enable experimental code to handle quoted SQL
 
 =head1 OPTIONS
 
@@ -100,6 +104,16 @@ standard found at http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt.
 Defines the keyword exceptions to be used when formatting, instead of the
 defaults.  The list is currently as, on, set, desc, asc, cast, int, in, like,
 all, date, time, replace, and substring.
+
+=item B<sub_select_indent>
+
+This enables code to further indent a sub-select that may be part of the SQL
+being tidied.
+
+=item B<watch_for_code>
+
+This switch allows the tool to deal with a query that has code around (before
+and after) the SQL.
 
 =back
 
