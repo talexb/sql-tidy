@@ -113,13 +113,13 @@ sub tidy
 
         my %matched_pairs = ( q{'} => q{'}, q{"} => q{"}, '{' => '}' );
 	$quote2 = $matched_pairs{ $quote1 };
-	my $after = '';
 
 	#  .. and do a greedy match to find the closing quote.
 
 	if ( $sql =~ /(.+)$quote2(.+)$/m ) {
 
-	  ( $sql, $after ) = ( $1, join('', $quote2, $2 ) );
+	  my @parts = ( $1, $2 );
+	  ( $sql, $after ) = ( $parts[0], join('', $quote2, $parts[1] ) );
 	}
 
       }

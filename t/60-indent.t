@@ -41,7 +41,8 @@ use SQL::Tidy::Util;
       my $before = join('', @parts[0..1]);
       my $after = join('', @parts[3..4]);
 
-      like ( $result->[0], qr/$before/, 'First part matches' );
+      is ( substr ( $result->[0], 0, length ( $before ) ), $before,
+        'First part matches' );
       like ( $result->[-1], qr/$after/, 'Last part matches' );
 
       is ( scalar @{ $result }, 3, 'Got three lines' );
