@@ -27,10 +27,9 @@ use SQL::Tidy::Util;
 #  the beginning.
 
 {
-    my $tidy = SQL::Tidy->new(sub_select_indent => 1);
-    my $query = q{
-    my $q = 'select min(COMPLETE) as COMPLETE from OESHIH where ORDUNIQ=?'; 
-};
+    my $tidy = SQL::Tidy->new(watch_for_code => 1);
+    my $query =
+      q{    my $q = 'select min(COMPLETE) as COMPLETE from OESHIH where ORDUNIQ=?';};
 
     my $result = $tidy->tidy($query);
 

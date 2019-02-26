@@ -11,7 +11,7 @@ use SQL::Tidy::Constants;
 use SQL::Tokenizer;
 
 use constant KEYWORD_EXCEPTIONS =>
-  qw/as on set desc asc cast int in like all date time replace substring/;
+  qw/as on set desc asc cast int in like all date time replace substring min max/;
 
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
@@ -42,6 +42,7 @@ sub new
       keywords           => [ @Keywords ],
       keyword_exceptions => [KEYWORD_EXCEPTIONS],
       sub_select_indent  => 0,
+      watch_for_code     => 0,
       @_
     );
 
@@ -107,8 +108,8 @@ sub tidy
       if ( $sql =~ /^(.+?)(['"{])(.+)/m ) {
 
 	my ( $quote1, $quote2 );
-	( $before, $quote1 ) = ( $1, $2 );
-	$sql = $3;
+	( $before, $quote1, $sql ) = ( $1, $2, $3 );
+	$before .= $quote1;
 
         my %matched_pairs = ( q{'} => q{'}, q{"} => q{"}, '{' => '}' );
 	$quote2 = $matched_pairs{ $quote1 };
@@ -116,7 +117,7 @@ sub tidy
 
 	#  .. and do a greedy match to find the closing quote.
 
-	if ( $sql =~ /(.+)${quote2}(.+)$/m ) {
+	if ( $sql =~ /(.+)$quote2(.+)$/m ) {
 
 	  ( $sql, $after ) = ( $1, join('', $quote2, $2 ) );
 	}
@@ -274,7 +275,21 @@ sub tidy
 
     if ( $self->{'watch_for_code'} ) {
 
-      #  Code here
+      #  Figure out the length of the original indent, and also the tidied
+      #  indent. For simplicity, we'll assume that the tidied indent is less
+      #  than the original indent. For the first line, replace the new indent
+      #  with the before piece that we saved; for all subsequent lines, add the
+      #  additional indent; and on the last line, add the after piece.
+
+      my ( $new_indent ) = ( $output[0] =~ /^(\s+)/ );
+      my $new_indent_length = length $new_indent;
+
+      my $delta_length = length ( $before ) - $new_indent_length;
+      my $delta = (' ') x $delta_length;
+
+      $output[0] =~ s/$new_indent/$before/e;
+      foreach my $o ( 1..$#output ) { $output[ $o ] = $delta . $output[ $o ]; }
+      $output[ -1 ] .= $after;
     }
 
     return ( \@output );
