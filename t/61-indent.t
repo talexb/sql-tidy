@@ -31,6 +31,13 @@ use SQL::Tidy::Util;
 
     is ( scalar @{ $result }, 6, 'Got six lines' );
 
+    #  OK, now for the clever part -- replace the code in front of the SQL with
+    #  spaces, and check for a gutter. Ignoring the stuff in 'after', this
+    #  should be fine.
+
+    substr ( $result->[0], 0, length ( $before ) ) = (' ') x length ( $before );
+    gutter_check ( $result, $tidy->keyword_exceptions );
+
     done_testing;
 }
 
