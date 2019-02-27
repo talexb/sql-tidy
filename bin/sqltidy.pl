@@ -35,10 +35,10 @@ use SQL::Tidy;
 
     my %args;
 
-    defined $indent and $args{'indent'}              = $indent;
-    defined $width  and $args{'width'}               = $width;
-    @keywords       and $args{'keywords'}            = \@keywords;
-    @keyword_exs    and $args{'keyword_exceptionss'} = \@keyword_exs;
+    defined $indent and $args{'indent'}             = $indent;
+    defined $width  and $args{'width'}              = $width;
+    @keywords       and $args{'keywords'}           = \@keywords;
+    @keyword_exs    and $args{'keyword_exceptions'} = \@keyword_exs;
     defined $sub_select_indent
       and $args{'sub_select_indent'} = $sub_select_indent;
 
