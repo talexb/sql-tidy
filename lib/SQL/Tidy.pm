@@ -11,7 +11,8 @@ use SQL::Tidy::Constants;
 use SQL::Tokenizer;
 
 use constant KEYWORD_EXCEPTIONS =>
-  qw/as on set desc asc cast int in like all date time replace substring/;
+  qw/as on set desc asc cast int in like all date time replace substring min
+  max count sum/;
 
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
@@ -42,6 +43,7 @@ sub new
       keywords           => [ @Keywords ],
       keyword_exceptions => [KEYWORD_EXCEPTIONS],
       sub_select_indent  => 0,
+      watch_for_code     => 0,
       @_
     );
 
@@ -93,6 +95,36 @@ sub tidy
 
     defined $sql or return [ $result ];
     $sql =~ /\w/ or return [ $result ];
+
+    #  2019-0225: Add feature to capture code before the beginning and after
+    #  the end of the SQL that we're tidying. We're looking for a single quote,
+    #  double quote or opening brace to start the SQL code. If we see that,
+    #  then we look for the matching closing character.
+
+    my ( $before, $after ) = ( '', '' );
+    if ( $self->{'watch_for_code'} ) {
+
+      #  Do a non-greedy match to find the opening quote ..
+
+      if ( $sql =~ /^(.+?)(['"{])(.+)/m ) {
+
+	my ( $quote1, $quote2 );
+	( $before, $quote1, $sql ) = ( $1, $2, $3 );
+	$before .= $quote1;
+
+        my %matched_pairs = ( q{'} => q{'}, q{"} => q{"}, '{' => '}' );
+	$quote2 = $matched_pairs{ $quote1 };
+
+	#  .. and do a greedy match to find the closing quote.
+
+	if ( $sql =~ /(.+)$quote2(.+)$/m ) {
+
+	  my @parts = ( $1, $2 );
+	  ( $sql, $after ) = ( $parts[0], join('', $quote2, $parts[1] ) );
+	}
+
+      }
+    }
 
     my @tokens = grep !/^\s+$/, SQL::Tokenizer->tokenize($sql);
 
@@ -237,6 +269,29 @@ sub tidy
     #  non-blank, add it to the stack, then return the stack.
 
     if ( $output =~ /\w/ ) { push ( @output, $output ); }
+
+    #  2019-0225: Perform the other half of the capture code feature by adding
+    #  the before and after strings to the output -- while remembering to
+    #  adjust the indents for all of the lines.
+
+    if ( $self->{'watch_for_code'} ) {
+
+      #  Figure out the length of the original indent, and also the tidied
+      #  indent. For simplicity, we'll assume that the tidied indent is less
+      #  than the original indent. For the first line, replace the new indent
+      #  with the before piece that we saved; for all subsequent lines, add the
+      #  additional indent; and on the last line, add the after piece.
+
+      my ( $new_indent ) = ( $output[0] =~ /^(\s+)/ );
+      my $new_indent_length = length $new_indent;
+
+      my $delta_length = length ( $before ) - $new_indent_length;
+      my $delta = (' ') x $delta_length;
+
+      $output[0] =~ s/$new_indent/$before/e;
+      foreach my $o ( 1..$#output ) { $output[ $o ] = $delta . $output[ $o ]; }
+      $output[ -1 ] .= $after;
+    }
 
     return ( \@output );
 }
