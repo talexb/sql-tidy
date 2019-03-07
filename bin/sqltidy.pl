@@ -48,7 +48,7 @@ use SQL::Tidy;
     my $obj = SQL::Tidy->new(%args);
     my $result = $obj->tidy( $input );
 
-    print join ( "\n", @$result, '' );
+    print join ( $/, @$result, '' );
 }
 
 __END__
