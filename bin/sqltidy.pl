@@ -41,8 +41,11 @@ use SQL::Tidy;
     @keyword_exs    and $args{'keyword_exceptions'} = \@keyword_exs;
     defined $sub_select_indent
       and $args{'sub_select_indent'} = $sub_select_indent;
+    defined $watch_for_code
+      and $args{'watch_for_code'} = $watch_for_code;
 
-    my @input = <>;
+    my @input = map { s/\s+$//; $_ } <>;
+    # my @input = <>;
     my $input = join('', @input );
 
     my $obj = SQL::Tidy->new(%args);
