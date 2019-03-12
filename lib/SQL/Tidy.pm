@@ -17,20 +17,42 @@ use constant KEYWORD_EXCEPTIONS =>
 #  2019-0218: Feature idea: add keyword and nonkeyword casing (upper, lower,
 #  and unchanged) as optional arguments to the object creation.
 
-#  2019-0222: Also like to add a feature that uses the existing indent as the
-#  indent to be used in this module. To make it even more clever, figure in the
-#  line of code and output that as well, so
+#  2019-0312: Two ideas: 1. As we do with commas, collapse the space around
+#  round and square brackets; and 2. When wrapping lines, break after commas
+#  instead of just wherever there's a space.
 #
-#    my $query = 'select foo from bar where baz > 0';
+#  Current, the query
 #
-#  becomes
+#    my $back_order_query = 'select rtrim(ITEM) as ITEM, QTYORDERED,
+#                                   QTYBACKORD, QTYSHPTODT, [DESC], DETAILNUM,
+#                                   ACCTSET
+#                              from OEORDD
+#                             where ORDUNIQ = ?
+#                          order by LINENUM';
 #
-#    my $query = 'select foo
-#                   from bar
-#                  where baz > 0';
+#  is tidied up to
 #
-#  just by the user specifying that there's a non-blank indent at the beginning
-#  of the line.
+#    my $back_order_query = 'select rtrim ( ITEM ) as ITEM, QTYORDERED, QTYBACKORD, QTYSHPTODT, [
+#                                   DESC ], DETAILNUM, ACCTSET
+#                              from OEORDD
+#                             where ORDUNIQ = ?
+#                          order by LINENUM';
+#
+#  This would look better if it was wrapped after the commas:
+#
+#    my $back_order_query = 'select rtrim ( ITEM ) as ITEM, QTYORDERED, QTYBACKORD, QTYSHPTODT,
+#                                   [ DESC ], DETAILNUM, ACCTSET
+#                              from OEORDD
+#                             where ORDUNIQ = ?
+#                          order by LINENUM';
+#
+#  And if the brackets were collapsed (step 1), it would look like this:
+#
+#    my $back_order_query = 'select rtrim (ITEM) as ITEM, QTYORDERED, QTYBACKORD, QTYSHPTODT,
+#                                   [DESC], DETAILNUM, ACCTSET
+#                              from OEORDD
+#                             where ORDUNIQ = ?
+#                          order by LINENUM';
 
 sub new
 {
@@ -88,6 +110,9 @@ sub new
 #  right thing, or we could have a separate tidy call for tables .. except that
 #  makes the user do extra work.
 
+#  2019-0312: Probably want a 'create table' mode where each field gets a new
+#  line.
+
 sub tidy
 {
     my ( $self, $sql ) = @_;
@@ -136,7 +161,7 @@ sub tidy
 
     #  2019-0218: Instead of doing a push, which added to whatever was here
     #  from previous calls, I do a set, so as to intentionally clear any output
-    #  from the previous calls.
+    #  from the previous calls. This means the same object can be reused.
 
     $self->{'output'} = [ { left => [], right => [] } ];
 
