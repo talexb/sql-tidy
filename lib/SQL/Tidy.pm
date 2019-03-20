@@ -54,6 +54,16 @@ use constant KEYWORD_EXCEPTIONS =>
 #                             where ORDUNIQ = ?
 #                          order by LINENUM';
 
+#  2019-0320: After posting to prepan.org and discussing the module name on
+#  #perl, two more resources were mantioned:
+#
+#  1. https://sqlfum.pt/ - a website that formats SQL using other rules; and
+#  2. https://metacpan.org/pod/SQL::Abstract::Tree - a module that represents
+#  an SQL query as an AST (Abstract Syntax Tree --
+#  https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+#
+#  The SQL in sqlfumpt look like they would be useful to add to the test suite.
+
 sub new
 {
     my $class = shift;
