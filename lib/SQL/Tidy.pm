@@ -143,21 +143,20 @@ sub tidy
 
       if ( $sql =~ /^(.+?)(['"{])(.+)/m ) {
 
-	my ( $quote1, $quote2 );
-	( $before, $quote1, $sql ) = ( $1, $2, $3 );
-	$before .= $quote1;
+        my ( $quote1, $quote2 );
+        ( $before, $quote1, $sql ) = ( $1, $2, $3 );
+        $before .= $quote1;
 
         my %matched_pairs = ( q{'} => q{'}, q{"} => q{"}, '{' => '}' );
-	$quote2 = $matched_pairs{ $quote1 };
+        $quote2 = $matched_pairs{$quote1};
 
-	#  .. and do a greedy match to find the closing quote.
+        #  .. and do a greedy match to find the closing quote.
 
-	if ( $sql =~ /(.+)$quote2(.+)$/m ) {
+        if ( $sql =~ /(.+)$quote2(.+)$/m ) {
 
-	  my @parts = ( $1, $2 );
-	  ( $sql, $after ) = ( $parts[0], join('', $quote2, $parts[1] ) );
-	}
-
+          my @parts = ( $1, $2 );
+          ( $sql, $after ) = ( $parts[0], join( '', $quote2, $parts[1] ) );
+        }
       }
     }
 
