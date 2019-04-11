@@ -141,6 +141,7 @@ sub tidy
 
       #  Do a non-greedy match to find the opening quote ..
 
+      # uncoverable branch false
       if ( $sql =~ /^(.+?)(['"{])(.+)/m ) {
 
         my ( $quote1, $quote2 );
@@ -152,6 +153,7 @@ sub tidy
 
         #  .. and do a greedy match to find the closing quote.
 
+        # uncoverable branch false
         if ( $sql =~ /(.+)$quote2(.+)$/m ) {
 
           my @parts = ( $1, $2 );
@@ -302,6 +304,7 @@ sub tidy
     #  We've finished going through the output; if there's anything left that's
     #  non-blank, add it to the stack, then return the stack.
 
+    # uncoverable branch true
     if ( $output =~ /\w/ ) { push ( @output, $output ); }
 
     #  2019-0225: Perform the other half of the capture code feature by adding
