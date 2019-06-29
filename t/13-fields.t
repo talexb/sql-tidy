@@ -9,7 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-	#  Test line-folding by varying the output width.
+    #  Test line-folding by varying the output width.
 
     foreach my $max_width ( 30, 31, 32, 33, 34 ) {
 
@@ -47,7 +47,7 @@ use SQL::Tidy::Util;
           }
         }
       }
-	  gutter_check ( $result, $tidy->keyword_exceptions );
+      gutter_check ( $result, $tidy->keyword_exceptions );
 
       #  And check that no fields were missed.
 
@@ -57,5 +57,5 @@ use SQL::Tidy::Util;
       }
     }
 
-	done_testing;
+    done_testing;
 }

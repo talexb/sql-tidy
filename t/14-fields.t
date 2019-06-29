@@ -49,7 +49,7 @@ use SQL::Tidy::Util;
             $fields{$field} = 1;
           }
         }
-	    gutter_check ( $result, $tidy->keyword_exceptions );
+        gutter_check ( $result, $tidy->keyword_exceptions );
       }
 
       #  And check that no fields were missed.

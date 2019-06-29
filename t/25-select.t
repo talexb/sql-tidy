@@ -14,7 +14,7 @@ use SQL::Tidy::Util;
     in (select IDCUST from ARCUS where ANNUAL_SALES > 100000) order by
     LAST_NAME };
 
-	#  This tests whether a sub-select gets formatted correctly.
+    #  This tests whether a sub-select gets formatted correctly.
 
     my $result = $tidy->tidy($query);
     is ( scalar @$result, 7, 'Got seven lines' );

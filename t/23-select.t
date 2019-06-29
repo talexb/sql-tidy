@@ -30,7 +30,7 @@ use SQL::Tidy::Util;
                          cast(ORDNUMBER as int)
                 order by ORDNUMBER asc};
 
-	#  This tests another complex query.
+    #  This tests another complex query.
 
     my $result = $tidy->tidy($query);
     is ( scalar @$result, 14, 'Got fourteen lines' );

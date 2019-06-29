@@ -18,10 +18,10 @@ use SQL::Tidy::Util;
       \':\', \'\' ), \'.\', \'\' ), 1, 8 ), 
       ?, ?, ?, ?, ?, ?, ?, ?, ? )';
 
-	my $result = $tidy->tidy($query);
-	is ( scalar @$result, 4, 'Got four lines' );
+    my $result = $tidy->tidy($query);
+    is ( scalar @$result, 4, 'Got four lines' );
 
-	gutter_check ( $result, $tidy->keyword_exceptions );
+    gutter_check ( $result, $tidy->keyword_exceptions );
 
-	done_testing;
+    done_testing;
 }
