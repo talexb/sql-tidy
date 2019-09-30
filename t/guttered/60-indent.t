@@ -27,7 +27,7 @@ use SQL::Tidy::Util;
 #  the beginning.
 
 {
-    my $tidy = SQL::Tidy->new(watch_for_code => 1);
+    my $tidy = SQL::Tidy->new(watch_for_code => 1, format => 'guttered');
     my $query =
       q{    my $q = 'select min(COMPLETE) as COMPLETE from OESHIH where ORDUNIQ=?';};
 

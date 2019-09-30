@@ -9,7 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-    my $tidy = SQL::Tidy->new;
+    my $tidy = SQL::Tidy->new(format => 'guttered');
     my $query = q{ select cast(OEORDHO.VVALUE AS int) as WEBORDERNUM,
                       OEORDH.COMPLETE, OEORDH.ORDDATE, OEORDH.ORDUNIQ
                  from OEORDHO

@@ -9,7 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-    my $tidy = SQL::Tidy->new(sub_select_indent => 1);
+    my $tidy = SQL::Tidy->new(sub_select_indent => 1, format => 'guttered');
     my $query = q{IF EXISTS (SELECT * FROM table_name WHERE id = ?)
             BEGIN
             select 1

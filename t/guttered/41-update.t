@@ -9,7 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-    my $tidy = SQL::Tidy->new;
+    my $tidy = SQL::Tidy->new(format => 'guttered');
     my $sql = 'UPDATE players SET count = 0 WHERE build = $1 AND (hero = $2 OR region = $3) LIMIT 1';
 
     my $result = $tidy->tidy($sql);

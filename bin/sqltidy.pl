@@ -15,7 +15,7 @@ use SQL::Tidy;
 
 {
     my ( $indent, $width, @keywords, @keyword_exs, $sub_select_indent,
-      $watch_for_code );
+      $watch_for_code, $format );
     my ( $help, $man ) = ( 0, 0 );
 
     GetOptions(
@@ -25,6 +25,7 @@ use SQL::Tidy;
       'keyword_exs=s@'    => \@keyword_exs,
       'sub_select_indent' => \$sub_select_indent,
       'watch_for_code'    => \$watch_for_code,
+      'format=s'          => \$format,
 
       'help|?|n' => \$help,
       'man'      => \$man
@@ -43,6 +44,9 @@ use SQL::Tidy;
       and $args{'sub_select_indent'} = $sub_select_indent;
     defined $watch_for_code
       and $args{'watch_for_code'} = $watch_for_code;
+    $format = $args{'format'} // 'guttered';
+
+    if ( !exists $formats{ $format } ) { pod2usage(1); exit; }
 
     my @input = map { s/\s+$//; $_ } <>;
     # my @input = <>;

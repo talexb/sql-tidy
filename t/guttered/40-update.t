@@ -9,7 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-    my $tidy = SQL::Tidy->new;
+    my $tidy = SQL::Tidy->new(format => 'guttered');
     my $sql = 'UPDATE OEORDHO SET VVALUE = ?
                 WHERE ORDUNIQ = ? and OPTFIELD = ?';
 

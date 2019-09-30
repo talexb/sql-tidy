@@ -1,9 +1,13 @@
 SQL-Tidy
 
-This module is a tool to format SQL by putting keywords to the left of a
-gutter, and everything else to the right of a gutter.  A gutter is a column of
-whitespace, like the negative space between columns of type.
+This module is a developer's tool to format SQL from within source code.
 
+Two methods are available, guttered and staggered. The guttered format is
+formatted by putting keywords to the left of a gutter, and everything else to
+the right of a gutter.  A gutter is a column of whitespace, like the negative
+space between columns of type. The staggered format is formatted by putting the
+initial keywords at the first indent, and all other content at the second
+indent.
 
 INSTALLATION
 

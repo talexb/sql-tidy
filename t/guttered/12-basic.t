@@ -8,17 +8,13 @@ use Test::More;
 use SQL::Tidy;
 
 {
-    my $tidy = SQL::Tidy->new;
+    my $tidy = SQL::Tidy->new(format => 'guttered');
 
     my $result = $tidy->tidy;
-    is_deeply ( $result, [ '' ], 'Null string returned for no input' );
 
-    $result = $tidy->tidy('');
-    is_deeply ( $result, [ '' ], 'Null string returned for empty input' );
+    #  This is a slightly more complex example.
 
-    #  This is a trivial example to get things going.
-
-    my $sql = 'select 1';
+    my $sql = 'select foo, bar';
     $result = $tidy->tidy( $sql );
     is ( scalar @$result, 1, 'Array is the right size' );
     like ( $result->[0], qr/^\s{4}/, 'Indent is 4' );

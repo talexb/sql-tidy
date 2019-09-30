@@ -16,7 +16,7 @@ use SQL::Tidy::Util;
     #    insert into TABLE ( foo, bar, baz )',
     #         VALUES ( 4, "jolly", "20180422" )'
 
-    my $tidy = SQL::Tidy->new;
+    my $tidy = SQL::Tidy->new(format => 'guttered');
     my $sql = 'insert into TABLE (foo, bar, baz) VALUES (4, "jolly", "20180422")';
 
     my $result = $tidy->tidy($sql);

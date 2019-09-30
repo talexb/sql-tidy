@@ -13,7 +13,7 @@ use SQL::Tidy::Util;
 
     foreach my $max_width ( 30, 31, 32, 33, 34 ) {
 
-      my $tidy = SQL::Tidy->new( width => $max_width );
+      my $tidy = SQL::Tidy->new( width => $max_width, format => 'guttered' );
 
       #  Create a list of field names that are going to overflow the small margin
       #  that I've specified.
@@ -55,6 +55,8 @@ use SQL::Tidy::Util;
 
         is( $fields{$field}, 1, "$field was seen" );
       }
+
+      undef $tidy;
     }
 
     done_testing;

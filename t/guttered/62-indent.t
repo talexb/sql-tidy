@@ -11,7 +11,8 @@ use SQL::Tidy::Util;
 {
     my $tidy = SQL::Tidy->new(
       watch_for_code     => 1,
-      # keyword_exceptions => [qw/day cast as char desc on/]
+      keyword_exceptions => [qw/day cast as char desc on/],
+      format             => 'guttered'
     );
 
     my @lines;
@@ -24,7 +25,7 @@ use SQL::Tidy::Util;
 
     my $result = $tidy->tidy($query);
 
-    my @parts = split(/(')/, $query);
+    my @parts = split(/([{}])/, $query);
     my $before = join('', @parts[0..1]);
     my $after = join('', @parts[3..4]);
 
@@ -32,7 +33,7 @@ use SQL::Tidy::Util;
       'First part matches' );
     like ( $result->[-1], qr/$after/, 'Last part matches' );
 
-    is ( scalar @{ $result }, 3, 'Got three lines' );
+    is ( scalar @{ $result }, 9, 'Got nine lines' );
 
     substr ( $result->[0], 0, length ( $before ) ) = (' ') x length ( $before );
     gutter_check ( $result, $tidy->keyword_exceptions );
@@ -41,6 +42,11 @@ use SQL::Tidy::Util;
 }
 
 __DATA__
-        my $order_query = 'select ORDUNIQ
-                           from OEORDH
-                          where ORDNUMBER=?';
+    $cmd = q{select top 10
+               DATEDIFF(DAY, CAST(ORDDATE AS char(8)),
+                             CAST(EXPDATE AS char(8))) as DELTA,
+               rtrim(OEORDHO.VALUE) as FDTICKETNO, ORDNUMBER, EXPDATE, ORDDATE
+              from OEORDH
+         left join OEORDHO on OEORDH.ORDUNIQ=OEORDHO.ORDUNIQ
+             where COMPDATE = ? and COMPLETE >= 3 and OPTFIELD='FDTICKETNO'
+          order by EXPDATE-ORDDATE desc};

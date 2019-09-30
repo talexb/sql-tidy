@@ -9,10 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-    my $tidy = SQL::Tidy->new(
-      watch_for_code     => 1,
-      keyword_exceptions => [qw/day cast as char desc on/]
-    );
+    my $tidy = SQL::Tidy->new(watch_for_code => 1, format => 'guttered');
 
     my @lines;
     foreach my $line (<DATA>) {
@@ -32,7 +29,11 @@ use SQL::Tidy::Util;
       'First part matches' );
     like ( $result->[-1], qr/$after/, 'Last part matches' );
 
-    is ( scalar @{ $result }, 9, 'Got nine lines' );
+    is ( scalar @{ $result }, 6, 'Got six lines' );
+
+    #  OK, now for the clever part -- replace the code in front of the first
+    #  line of SQL with spaces, and then check for a gutter. There's non-SQL
+    #  stuff in the 'after' portion, but this should be fine.
 
     substr ( $result->[0], 0, length ( $before ) ) = (' ') x length ( $before );
     gutter_check ( $result, $tidy->keyword_exceptions );
@@ -41,11 +42,8 @@ use SQL::Tidy::Util;
 }
 
 __DATA__
-    $cmd = q{select top 10
-               DATEDIFF(DAY, CAST(ORDDATE AS char(8)),
-                             CAST(EXPDATE AS char(8))) as DELTA,
-               rtrim(OEORDHO.VALUE) as FDTICKETNO, ORDNUMBER, EXPDATE, ORDDATE
-              from OEORDH
-         left join OEORDHO on OEORDH.ORDUNIQ=OEORDHO.ORDUNIQ
-             where COMPDATE = ? and COMPLETE >= 3 and OPTFIELD='FDTICKETNO'
-          order by EXPDATE-ORDDATE desc};
+    my $cmd = q{select DATA_TYPE, COMPLETE, count(*) as COUNT2, format(sum(INVAMTDUE),'N2') as AMTDUE
+                  from OEORDH
+                 where ORDDATE=?
+              group by DATA_TYPE, COMPLETE
+              order by DATA_TYPE, COMPLETE};

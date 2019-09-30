@@ -9,7 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-    my $tidy = SQL::Tidy->new(sub_select_indent => 1);
+    my $tidy = SQL::Tidy->new(sub_select_indent => 1, format => 'guttered');
     my $query = q{ select rtrim(CODESLSP1) as CODESLSP1 from ARCUS where IDCUST
     in (select IDCUST from ARCUS where ANNUAL_SALES > 100000) order by
     LAST_NAME };

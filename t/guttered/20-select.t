@@ -9,7 +9,7 @@ use SQL::Tidy;
 use SQL::Tidy::Util;
 
 {
-    my $tidy = SQL::Tidy->new;
+    my $tidy = SQL::Tidy->new(format => 'guttered');
     my $sql = 'select foo from bar where baz>0';
 
     #  This tests the functionality that we get two lines in the format

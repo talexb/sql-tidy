@@ -1,10 +1,8 @@
-package SQL::Tidy;
+package SQL::Tidy::Guttered;
 
 use 5.006;
 use strict;
 use warnings;
-
-our $VERSION = '0.01';
 
 use SQL::Tidy::Constants;
 
@@ -344,4 +342,4 @@ sub keyword_exceptions
     return ( \%exceptions );
 }
 
-1; # End of SQL::Tidy
+1; # End of SQL::Tidy::Guttered
