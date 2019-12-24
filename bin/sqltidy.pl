@@ -44,9 +44,9 @@ use SQL::Tidy;
       and $args{'sub_select_indent'} = $sub_select_indent;
     defined $watch_for_code
       and $args{'watch_for_code'} = $watch_for_code;
-    $format = $args{'format'} // 'guttered';
+    $args{'format'} //= 'guttered';
 
-    if ( !exists $formats{ $format } ) { pod2usage(1); exit; }
+    if ( !exists $formats{ $args{'format'} } ) { pod2usage(1); exit; }
 
     my @input = map { s/\s+$//; $_ } <>;
     # my @input = <>;
