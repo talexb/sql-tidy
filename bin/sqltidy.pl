@@ -50,7 +50,7 @@ use SQL::Tidy;
 
     my @input = map { s/\s+$//; $_ } <>;
     # my @input = <>;
-    my $input = join('', @input );
+    my $input = join( $/, @input );
 
     my $obj = SQL::Tidy->new(%args);
     my $result = $obj->tidy( $input );
