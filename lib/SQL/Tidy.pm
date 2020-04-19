@@ -126,17 +126,28 @@ sub new
 sub tidy
 {
     my ( $self, $sql ) = @_;
-    my $result = '';
+    $self->{result} = [ '' ];
 
-    defined $sql or return [ $result ];
-    $sql =~ /\w/ or return [ $result ];
+    defined $sql or return $self->{result};
+    $sql =~ /\w/ or return $self->{result};
+
+    $self->_load ( $sql );
+    $self->_build;
+    $self->_output;
+
+    return $self->{result};
+}
+
+sub _load
+{
+    my ( $self, $sql ) = @_;
 
     #  2019-0225: Add feature to capture code before the beginning and after
     #  the end of the SQL that we're tidying. We're looking for a single quote,
     #  double quote or opening brace to start the SQL code. If we see that,
     #  then we look for the matching closing character.
 
-    my ( $before, $after ) = ( '', '' );
+    ( $self->{before}, $self->{after} ) = ( '', '' );
     if ( $self->{'watch_for_code'} ) {
 
       #  Do a non-greedy match to find the opening quote ..
@@ -145,8 +156,8 @@ sub tidy
       if ( $sql =~ /^(.+?)(['"{])(.+)/m ) {
 
         my ( $quote1, $quote2 );
-        ( $before, $quote1, $sql ) = ( $1, $2, $3 );
-        $before .= $quote1;
+        ( $self->{before}, $quote1, $sql ) = ( $1, $2, $3 );
+        $self->{before} .= $quote1;
 
         my %matched_pairs = ( q{'} => q{'}, q{"} => q{"}, '{' => '}' );
         $quote2 = $matched_pairs{$quote1};
@@ -157,12 +168,17 @@ sub tidy
         if ( $sql =~ /(.+)$quote2(.+)$/m ) {
 
           my @parts = ( $1, $2 );
-          ( $sql, $after ) = ( $parts[0], join( '', $quote2, $parts[1] ) );
+          ( $sql, $self->{after} ) = ( $parts[0], join( '', $quote2, $parts[1] ) );
         }
       }
     }
 
-    my @tokens = grep !/^\s+$/, SQL::Tokenizer->tokenize($sql);
+    $self->{tokens} = [ grep !/^\s+$/, SQL::Tokenizer->tokenize($sql) ];
+}
+
+sub _build
+{
+    my $self = shift;
 
     #  2019-0215: The concept behind this design is that we'll have keywords to
     #  the left of the gutter and everything else to the right of the gutter.
@@ -176,8 +192,8 @@ sub tidy
 
     $self->{'output'} = [ { left => [], right => [] } ];
 
-    my $left_max = 0;
-    foreach my $t ( @tokens ) {
+    $self->{left_max} = 0;
+    foreach my $t ( @{$self->{tokens}} ) {
 
       #  2019-0218: This is a little complicated. I want to know that 'as' is a
       #  keyword, but I don't want it to start a new line. The SQL
@@ -207,7 +223,7 @@ sub tidy
         push( @{ $self->{'output'}->[-1]->{'left'} }, $t );
         my $this_max =
           length ( join ( ' ', @{ $self->{'output'}->[-1]->{'left'} } ) );
-        if ( $this_max > $left_max ) { $left_max = $this_max; }
+        if ( $this_max > $self->{left_max} ) { $self->{left_max} = $this_max; }
       }
       else {
 
@@ -224,6 +240,11 @@ sub tidy
         }
       }
     }
+}
+
+sub _output
+{
+    my $self = shift;
 
     #  2019-0215: This is where we take all of the elements we've read in and
     #  build the output lines, leaving a gutter down the middle to separate the
@@ -255,8 +276,8 @@ sub tidy
 
       my $padding_amount =
         $bracket_in_previous_line
-          ?   $left_max - length($left) + 1 + $local_left_max
-          : ( $left_max - length($left) );
+          ?   $self->{left_max} - length($left) + 1 + $local_left_max
+          : ( $self->{left_max} - length($left) );
 
       $output =
         join( '', (' ') x $self->{'indent'}, (' ') x $padding_amount, $left );
@@ -271,7 +292,7 @@ sub tidy
         if ( length ( $output ) + length ( $r ) + 1 > $self->{'width'}  ) {
 
           push ( @output, $output );
-          $output = join( '', (' ') x $self->{'indent'}, ( ' ' x $left_max ) );
+          $output = join( '', (' ') x $self->{'indent'}, ( ' ' x $self->{left_max} ) );
         }
         $output .= " $r";
       }
@@ -322,15 +343,15 @@ sub tidy
       my ( $new_indent ) = ( $output[0] =~ /^(\s+)/ );
       my $new_indent_length = length $new_indent;
 
-      my $delta_length = length ( $before ) - $new_indent_length;
+      my $delta_length = length ( $self->{before} ) - $new_indent_length;
       my $delta = (' ') x $delta_length;
 
-      $output[0] =~ s/$new_indent/$before/e;
+      $output[0] =~ s/$new_indent/$self->{before}/e;
       foreach my $o ( 1..$#output ) { $output[ $o ] = $delta . $output[ $o ]; }
-      $output[ -1 ] .= $after;
+      $output[ -1 ] .= $self->{after};
     }
 
-    return ( \@output );
+    $self->{result} = \@output;
 }
 
 sub keyword_exceptions
