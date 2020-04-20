@@ -16,6 +16,7 @@ use SQL::Tidy;
 {
     my ( $indent, $width, @keywords, @keyword_exs, $sub_select_indent,
       $watch_for_code );
+    my ( $sel_fmt );
     my ( $help, $man ) = ( 0, 0 );
 
     GetOptions(
@@ -25,6 +26,8 @@ use SQL::Tidy;
       'keyword_exs=s@'    => \@keyword_exs,
       'sub_select_indent' => \$sub_select_indent,
       'watch_for_code'    => \$watch_for_code,
+
+      'sel_fmt' => \$sel_fmt,
 
       'help|?|n' => \$help,
       'man'      => \$man
@@ -43,6 +46,8 @@ use SQL::Tidy;
       and $args{'sub_select_indent'} = $sub_select_indent;
     defined $watch_for_code
       and $args{'watch_for_code'} = $watch_for_code;
+
+    defined $sel_fmt and $args{'sel_fmt'} = $sel_fmt;
 
     my @input = map { s/\s+$//; $_ } <>;
     # my @input = <>;
@@ -65,24 +70,25 @@ sqltidy - Tidy up formatting of some SQL commands
 sqltidy [options]
 
  Options:
-   --help          brief help message
-   --man           full documentation
-   --indent        number of spaces to indent (default is 4)
-   --width         width to use for wrapping (default is 78)
-   --keywords      list of keywords to use instead of defaults
-   --keyword_exs   list of keyword exceptions instead of the defaults
+   --help               brief help message
+   --man                full documentation
+   --indent             number of spaces to indent (default is 4)
+   --width              width to use for wrapping (default is 78)
+   --keywords           list of keywords to use instead of defaults
+   --keyword_exs        list of keyword exceptions instead of the defaults
    --sub_select_indent  enable experimental code to handle sub-selects
    --watch_for_code     enable experimental code to handle quoted SQL
+   --sel_fmt            chooses format for select statements
 
 =head1 OPTIONS
 
-=over 8
+=over 4
 
-=item B<-help>
+=item B<help>
  
 Print a brief help message and exits.
  
-=item B<-man>
+=item B<man>
  
 Prints the manual page and exits.
 
@@ -117,6 +123,27 @@ being tidied.
 
 This switch allows the tool to deal with a query that has code around (before
 and after) the SQL.
+
+=item B<sel_fmt>
+
+This switch chooses format choices for select statements.
+The choices are
+
+=over 12
+
+=item B<both-rl> : Put both keywords, and fields and conditions on the same line, using
+right justification for the keywords, and left justification for the fields and
+conditions. This leaves a gutter between the two halves of the query statement.
+
+=item B<alt-ll> : Put keywords, and fields and condition on alternate lines.
+
+=item B<both-ll> : Put both keywords, and fields and conditions on the same line, using
+left justification for both parts of the line.
+
+=back
+
+In all cases, fields and conditions are wrapped to the next line if necessary,
+using the indent used at the beginning of the line.
 
 =back
 
